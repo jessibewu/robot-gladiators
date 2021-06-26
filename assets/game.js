@@ -1,15 +1,12 @@
-/*If it is the player-robot's turn:
-Prompt the fight or skip request
-Remove damage from enemy-robot's health
-Check if the enemy-robot has enough health to continue fighting
-
-If it is not the player-robot's turn:
-Remove damage from the player-robot's health
-Check if the player-robot has enough health to continue fighting
-After the turn is done, switch turns for the next bout of fighting:
-
-If the player-robot went first, run the logic for the enemy-robot attacking the player-robot
-If the enemy-robot went first, run the logic for the player-robot attacking the enemy-robot*/
+/*When the game has ended and we've survived facing all the robots:
+  Retrieve the current high score from localStorage
+  Compare the player-robot score with the current high score
+  If the current high score is higher
+    Send player the message that the player did not beat the high score
+  If the player score is higher
+    Set new high score object into localStorage
+    Set new player-robot's name object into localStorage
+    Send player the message that they beat the high score*/
 
 /* GAME FUNCTIONS */
 
@@ -76,11 +73,6 @@ var fight = function(enemy) {
 
       var damage = randomNumber(playerInfo.attack - 3, playerInfo.attack);
     }
-
-    enemy.health = Math.max(0, enemy.health - damage);
-    console.log(
-      playerInfo.name + ' attacked ' + enemy.name + '. ' + enemy.name + ' now has ' + enemy.health + ' health remaining.'
-    );
 
     // remove enemy's health by subtracting the amount we set in the damage variable
     enemy.health = Math.max(0, enemy.health - damage);
@@ -309,3 +301,33 @@ console.log(enemyInfo[0]['attack']);
 
 /* RUN GAME */
 startGame();
+
+var endGame = function() {
+  window.alert("The game has now ended. Let's see how you did!");
+
+  // check localStorage for high score, if it's not there, use 0
+  var highScore = localStorage.getItem("highscore");
+  if (highScore === null) {
+    highScore = 0;
+  }
+  // if player has more money than the high score, player has new high score!
+  if (playerInfo.money > highScore) {
+    localStorage.setItem("highscore", playerInfo.money);
+    localStorage.setItem("name", playerInfo.name);
+
+    alert(playerInfo.name + " now has the high score of " + playerInfo.money + "!");
+  } 
+  else {
+    alert(playerInfo.name + " did not beat the high score of " + highScore + ". Maybe next time!");
+  }
+
+  // ask player if they'd like to play again
+  var playAgainConfirm = window.confirm("Would you like to play again?");
+
+  if (playAgainConfirm) {
+    startGame();
+  } 
+  else {
+    window.alert("Thank you for playing Robot Gladiators! Come back soon!");
+  }
+};
